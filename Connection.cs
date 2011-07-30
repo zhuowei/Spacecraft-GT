@@ -92,6 +92,12 @@ namespace SpacecraftGT
 							break;
 						
 						case 't':		// string
+							bytes = Encoding.BigEndianUnicode.GetBytes((string) args[i-1]);
+							packet.Append(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short) (bytes.Length / 2))));
+							packet.Append(bytes);
+							break;
+
+						case 'T':		// string8
 							bytes = Encoding.UTF8.GetBytes((string) args[i-1]);
 							packet.Append(BitConverter.GetBytes(IPAddress.HostToNetworkOrder((short) bytes.Length)));
 							packet.Append(bytes);
@@ -299,12 +305,20 @@ namespace SpacecraftGT
 					
 					case 't':		// string
 						if ((bufPos + 2) > _Buffer.Length) return nPair;
-						short len = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(_Buffer, bufPos));
+						short len = (short) (IPAddress.NetworkToHostOrder(BitConverter.ToInt16(_Buffer, bufPos)) * 2);
 						if ((bufPos + 2 + len) > _Buffer.Length) return nPair;
-						data.Append((string) Encoding.UTF8.GetString(_Buffer, bufPos + 2, len));
+						data.Append((string) Encoding.BigEndianUnicode.GetString(_Buffer, bufPos + 2, len));
 						bufPos += (2 + len);
 						break;
 					
+					case 'T':		// string8
+						if ((bufPos + 2) > _Buffer.Length) return nPair;
+						short len8 = IPAddress.NetworkToHostOrder(BitConverter.ToInt16(_Buffer, bufPos));
+						if ((bufPos + 2 + len8) > _Buffer.Length) return nPair;
+						data.Append((string) Encoding.UTF8.GetString(_Buffer, bufPos + 2, len8));
+						bufPos += (2 + len8);
+						break;
+
 					case 'I':		// inventory entity
 						// short; if nonnegative, byte then short.
 						InventoryItem item;
@@ -378,7 +392,7 @@ namespace SpacecraftGT
 					// TODO: Implement name verification
 					
 					Transmit(PacketType.LoginDetails, _Player.EntityID,
-						Spacecraft.Server.Name, Spacecraft.Server.Motd,
+						Spacecraft.Server.Name, 
 						/* World.Seed */ (long) 0, /* World.Dimension */ (sbyte) 0);
 					Spacecraft.Log(_Player.Username + " (/" + IPString + ") has joined");
 					_Player.Spawn();

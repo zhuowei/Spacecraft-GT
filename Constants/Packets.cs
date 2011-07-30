@@ -79,7 +79,7 @@ namespace SpacecraftGT
 		
 		public static string[] Data = {
 			"b",				// keep alive - 0x00
-			"bittlb",			// login request
+			"bitlb",			// login request
 			"bt",				// handshake
 			"bt",				// chat message
 			"bl",				// time update
@@ -133,7 +133,7 @@ namespace SpacecraftGT
 			"", "", "", "", "",
 			"", "", "", "", "",
 			"", "", "", "",		// unused space
-			"bbbtb",			// open window
+			"bbbTb",			// open window
 			"bb",				// close window
 			"bbsbsI",			// window click
 			"bbsI",				// window slot

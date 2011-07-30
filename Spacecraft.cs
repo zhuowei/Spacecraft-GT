@@ -8,7 +8,7 @@ namespace SpacecraftGT
 {
 	public static class Spacecraft
 	{
-		public const int ProtocolVersion = 8;
+		public const int ProtocolVersion = 14;
 		
 		public static Random Random;
 		public static Server Server;
